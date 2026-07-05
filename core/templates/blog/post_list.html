@@ -15,7 +15,7 @@
             <h2>{{post.id}}-{{post.title}}</h2>
         </a>
         <p>{{post.content}}</p>
-<<<<<<< HEAD
+
         <small>{{post.author}}</small>
         <br>
         <a href="{% url 'blog:post-edit' pk=post.id %}" class="edit">
@@ -27,9 +27,8 @@
         <a href="{% url 'blog:post-delete' pk=post.id %}" class="edit">
             <h5>delete</h5>
         </a>
-=======
         <small>{{post.author.first_name}}-{{post.author.last_name}}</small>
->>>>>>> b4d3d3add706657f5aaf72c048be38e6af349fa2
+
     </div>
     {% endfor %}
     <div class="pagination">
