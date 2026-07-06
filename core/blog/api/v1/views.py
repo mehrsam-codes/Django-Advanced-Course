@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view , permission_classes
 from rest_framework.response import Response 
 from rest_framework.permissions import IsAuthenticatedOrReadOnly , IsAdminUser ,IsAuthenticated
-from .serializers import PostSerializer
-from blog.models import Post
+from .serializers import PostSerializer , CategorySerializer
+from blog.models import Post , Category
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
@@ -10,6 +10,7 @@ from rest_framework.generics import CreateAPIView , ListAPIView ,RetrieveUpdateD
 from rest_framework.generics import GenericAPIView , ListAPIView , ListCreateAPIView
 from rest_framework import mixins
 from rest_framework import viewsets
+from rest_framework.decorators import action
 
 '''@api_view(["GET" , "POST"])
 @permission_classes([IsAuthenticated])
@@ -93,27 +94,11 @@ class PostDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True) 
 
-class PostViewSet(viewsets.ViewSet):
+class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
-    def list(self,request):
-        serializer = self.serializer_class(self.queryset,many=True)
-        return Response(serializer.data)
-    
-    def retrieve(self,request,pk=None):
-        post_object = get_object_or_404(self.queryset , pk=pk)
-        serializer = self.serializer_class(post_object)
-        return Response(serializer.data)
-    
-    def create(self, request):
-        pass
-
-    def update(self, request, pk=None):
-        pass
-
-    def partial_update(self, request, pk=None):
-        pass
-
-    def destroy(self, request, pk=None):
-        pass
+class CategoryModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
