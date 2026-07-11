@@ -11,7 +11,10 @@ from rest_framework.generics import GenericAPIView , ListAPIView , ListCreateAPI
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework.decorators import action
-
+from .permission import IsOwnerOrReadOnly
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter , OrderingFilter
+from .paginations import DefaultPagination
 '''@api_view(["GET" , "POST"])
 @permission_classes([IsAuthenticated])
 def postList(request):
@@ -90,7 +93,7 @@ def postDetail(request , id):
 
 class PostDetail(RetrieveUpdateDestroyAPIView):
     '''getting detail of the post and edit plus removing it '''
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True) 
 
@@ -98,6 +101,11 @@ class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
+    filter_backends = [DjangoFilterBackend ,SearchFilter,OrderingFilter]
+    filterset_fields = {'category':{"exact","in"}, 'author':{"exact"},'status':{"exact"}}
+    search_fields = ['title', 'content']
+    ordering_fields = ['published_date']
+    pagination_class = DefaultPagination
 class CategoryModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = CategorySerializer
