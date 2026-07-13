@@ -15,18 +15,18 @@ from .permission import IsOwnerOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter , OrderingFilter
 from .paginations import DefaultPagination
-'''@api_view(["GET" , "POST"])
-@permission_classes([IsAuthenticated])
-def postList(request):
-    if request.method == "GET" :
-        posts = Post.objects.filter(status= True)
-        serializer = PostSerializer(posts,many=True)
-        return Response(serializer.data)
-    elif request.method == "POST":
-        serializer = PostSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)'''
+# @api_view(["GET" , "POST"])
+# @permission_classes([IsAuthenticated])
+# def postList(request):
+#     if request.method == "GET" :
+#         posts = Post.objects.filter(status= True)
+#         serializer = PostSerializer(posts,many=True)
+#         return Response(serializer.data)
+#     elif request.method == "POST":
+#         serializer = PostSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data)
 
 """class PostList(APIView):
     '''getting a list of posts and creating a new post'''
@@ -51,22 +51,21 @@ class PostList(ListCreateAPIView):
     queryset = Post.objects.filter(status=True)
 
 
-'''@api_view(["GET" , "PUT" , "DELETE"])
-@permission_classes([IsAuthenticatedOrReadOnly])
-def postDetail(request , id):
-    post = get_object_or_404(Post , pk=id , status=True)
-    if request.method == "GET":
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
-    elif request.method == "PUT":
-        serializer = PostSerializer(post,data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-    elif request.method == "DELETE":
-        post.delete()
-        return Response({"detail:item removed successfully"} , status=status.HTTP_204_NO_CONTENT)'''
-    
+# @api_view(["GET" , "PUT" , "DELETE"])
+# @permission_classes([IsAuthenticatedOrReadOnly])
+# def postDetail(request , id):
+#     post = get_object_or_404(Post , pk=id , status=True)
+#     if request.method == "GET":
+#         serializer = PostSerializer(post)
+#         return Response(serializer.data)
+#     elif request.method == "PUT":
+#         serializer = PostSerializer(post,data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data)
+#     elif request.method == "DELETE":
+#         post.delete()
+#         return Response({"detail:item removed successfully"} , status=status.HTTP_204_NO_CONTENT)
 
 """class PostDetail(APIView):
     '''getting detail of the post and edit plus removing it '''
