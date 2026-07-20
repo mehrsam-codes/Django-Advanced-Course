@@ -92,7 +92,7 @@ class PostList(ListCreateAPIView):
 
 class PostDetail(RetrieveUpdateDestroyAPIView):
     '''getting detail of the post and edit plus removing it '''
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True) 
 
