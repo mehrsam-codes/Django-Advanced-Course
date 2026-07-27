@@ -6,6 +6,7 @@ from .serializer import (
     CustomTokenObtainPairSerializer,
     ChangePasswordSerializer,
     ProfileSerializer,
+    ActivationResendApiSerializer
 )
 from rest_framework import status
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -19,6 +20,10 @@ from django.shortcuts import get_object_or_404
 from mail_templated import send_mail
 from ..utils import EmailThread
 from mail_templated import EmailMessage
+from rest_framework_simplejwt.tokens import RefreshToken
+import jwt 
+from jwt.exceptions import ExpiredSignatureError , InvalidSignatureError
+from django.conf import settings
 User = get_user_model()
 
 
@@ -29,9 +34,18 @@ class RegistrationAPIView(generics.GenericAPIView):
         serializer = RegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            email = serializer.validated_data["email"]
             data = {"email": serializer.validated_data["email"]}
+            user_obj = get_object_or_404(User,email=email)
+            token = self.get_tokens_for_user(user_obj)
+            email_obj = EmailMessage('email/activation_email.tpl', {'token': token}, 'admin@gmail.com', to=[email])
+            EmailThread(email_obj).start()
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_tokens_for_user(self , user):
+            refresh = RefreshToken.for_user(user)
+            return {str(refresh.access_token)}
 
 
 class CustomObtainAuthToken(ObtainAuthToken):
@@ -101,8 +115,55 @@ class ProfileApiView(generics.RetrieveUpdateAPIView):
 class TestEmailSend(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
-
-
-        email_obj = EmailMessage('email/hello.tpl', {'name': 'mehrsam'}, 'admin@gmail.com', to=['mehrsamdevelop@gmail.com'])
+        self.email = "admin@gmail.com"
+        user_obj = get_object_or_404(User,email=self.email)
+        token = self.get_tokens_for_user(user_obj)
+        email_obj = EmailMessage('email/hello.tpl', {'token': token}, 'admin@gmail.com', to=[self.email])
         EmailThread(email_obj).start()
         return Response("email sent")
+    def get_tokens_for_user(self , user):
+            refresh = RefreshToken.for_user(user)
+            return {str(refresh.access_token)}
+class ActivationApiView(APIView):
+    def get(self,request,token,*args,**kwargs):
+        try:
+            token = jwt.decode(token , settings.SECRET_KEY , algorithms=["H5256"])
+            user_id = token.get('user_id')
+        except ExpiredSignatureError:
+            return Response({'details':'token has been expired'} , status=status.HTTP_400_BAD_REQUEST)
+        except InvalidSignatureError:
+            return Response({'details':'token is not valid'} , status=status.HTTP_400_BAD_REQUEST)
+        user_obj = User.objects.get(pk = user_id)
+        if user_obj.is_verified:
+            return Response({'details':'your account has already activated '})
+        user_obj.is_verified = True
+        user_obj.save()
+        return Response({'details':'your account have been verified and activated suuceesfuly'})
+class ActivationResendApiView(generics.GenericAPIView):
+    serializer_class = ActivationResendApiSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user_obj = serializer.validated_data["user"]
+
+        token = self.get_tokens_for_user(user_obj)
+
+        email_obj = EmailMessage(
+            "email/activation_email.tpl",
+            {"token": token},
+            "admin@gmail.com",
+            to=[user_obj.email],
+        )
+
+        EmailThread(email_obj).start()
+
+        return Response(
+            {"details": "user activation resend successfully"},
+            status=status.HTTP_200_OK,
+        )
+
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
