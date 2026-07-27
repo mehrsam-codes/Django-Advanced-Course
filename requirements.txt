@@ -1,5 +1,5 @@
 # general modules
-Django==6.0.6
+Django== 4.2.22
 python-decouple 
 Pillow
 djangorestframework
@@ -8,6 +8,11 @@ djangorestframework
 markdown      
 django-filter 
 drf-yasg[validation]
+djangorestframework-simplejwt
 
 
 # deployment module 
+
+
+# Email third party modules
+django-mail-templated
