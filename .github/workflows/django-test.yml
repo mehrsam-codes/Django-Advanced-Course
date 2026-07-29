@@ -7,14 +7,14 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: docker-compose up -d
-      run: Run Tests
-    - name : Run Tests
-      run : docker exec backend -c "flake8 && pytest ."
+      - uses: actions/checkout@v4
+
+      - name: Setup Docker Compose
+        run: docker compose up -d
+
+      - name: Run Tests
+        run: docker exec backend sh -c "flake8 && pytest ."
