@@ -1,29 +1,29 @@
-from rest_framework import generics
+import jwt
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError
+from mail_templated import EmailMessage
+from rest_framework import generics, status
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from accounts.models import Profile
+
+from ..utils import EmailThread
 from .serializer import (
-    RegistrationSerializer,
+    ActivationResendApiSerializer,
+    ChangePasswordSerializer,
     CustomAuthTokenSerializer,
     CustomTokenObtainPairSerializer,
-    ChangePasswordSerializer,
     ProfileSerializer,
-    ActivationResendApiSerializer,
+    RegistrationSerializer,
 )
-from rest_framework import status
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.auth import get_user_model
-from accounts.models import Profile
-from django.shortcuts import get_object_or_404
-from mail_templated import send_mail
-from ..utils import EmailThread
-from mail_templated import EmailMessage
-from rest_framework_simplejwt.tokens import RefreshToken
-import jwt
-from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError
-from django.conf import settings
 
 User = get_user_model()
 

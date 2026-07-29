@@ -1,22 +1,20 @@
-from django.shortcuts import render, redirect
-from django.views.generic import (
-    TemplateView,
-    RedirectView,
-    ListView,
-    DetailView,
-    FormView,
-    CreateView,
-    UpdateView,
-    DeleteView,
-)
-from .models import Post
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from .forms import PostForm
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
 )
+from django.shortcuts import get_object_or_404, render
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    RedirectView,
+    TemplateView,
+    UpdateView,
+)
+
+from .forms import PostForm
+from .models import Post
 
 # Create your views here.
 """
